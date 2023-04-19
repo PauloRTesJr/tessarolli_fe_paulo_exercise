@@ -1,11 +1,13 @@
-import * as React from 'react';
+import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
 import {ListItem, Teams as TeamsList} from 'types';
 import {getTeams as fetchTeams} from '../api';
 import Header from '../components/Header';
 import List from '../components/List';
 import {Container} from '../components/GlobalComponents';
+import Filter from '../components/Filter';
 
-var MapT = (teams: TeamsList[]) => {
+// TODO: Change every possible var to const
+var mapTeamsToList = (teams: TeamsList[]) => {
     return teams.map(team => {
         var columns = [
             {
@@ -22,13 +24,28 @@ var MapT = (teams: TeamsList[]) => {
     });
 };
 
-const Teams = () => {
-    const [teams, setTeams] = React.useState<any>([]);
-    const [isLoading, setIsLoading] = React.useState<any>(true);
+const filterTeams = (teams: TeamsList[], filter: string) => {
+    const compareTeamNameWithFilter = (teamName: string) =>
+        teamName.toUpperCase().includes(filter.toUpperCase());
+    return filter ? teams.filter(team => compareTeamNameWithFilter(team.name)) : teams;
+};
 
-    React.useEffect(() => {
+const Teams = () => {
+    // TODO: Remove any from useState
+    const [teams, setTeams] = useState<any>([]);
+    const [isLoading, setIsLoading] = useState<any>(true);
+    const [filter, setFilter] = useState<string | null>(null);
+
+    const filteredTeams = useMemo(() => filterTeams(teams, filter), [teams, filter]);
+    const mappedTeamsToList = useMemo(() => mapTeamsToList(filteredTeams), [filteredTeams]);
+
+    const handleOnFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
+        setFilter(event.target.value);
+
+    useEffect(() => {
         const getTeams = async () => {
             const response = await fetchTeams();
+
             setTeams(response);
             setIsLoading(false);
         };
@@ -38,7 +55,8 @@ const Teams = () => {
     return (
         <Container>
             <Header title="Teams" showBackButton={false} />
-            <List items={MapT(teams)} isLoading={isLoading} />
+            <Filter label="Search Project" onChange={event => handleOnFilterChange(event)} />
+            <List items={mappedTeamsToList} isLoading={isLoading} />
         </Container>
     );
 };
