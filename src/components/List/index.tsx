@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {NavigateOptions} from 'react-router-dom';
 import {ListItem, Teams, UserData} from 'types';
 import Card from '../Card';

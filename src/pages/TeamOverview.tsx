@@ -69,6 +69,19 @@ const TeamOverview = () => {
         );
     };
 
+    const teamMembersList = () => {
+        return <List onClick={handleCardClick} hasNavigation items={mappedTeamMembersToListItem} />;
+    };
+
+    const renderTeamOverview = () => {
+        return (
+            <React.Fragment>
+                {teamLeadCard()}
+                {teamMembersList()}
+            </React.Fragment>
+        );
+    };
+
     useEffect(() => {
         const getTeamUsers = async () => {
             const {teamLeadId, teamMemberIds = []} = await getTeamOverview(teamId);
@@ -92,8 +105,7 @@ const TeamOverview = () => {
             <Header title={`Team ${location.state.name}`} />
             <Filter label="Search Team Member" onChange={handleOnFilterChange} />
             {isLoading && <Spinner />}
-            {!isLoading && teamLeadCard()}
-            <List onClick={handleCardClick} hasNavigation items={mappedTeamMembersToListItem} />
+            {!isLoading && renderTeamOverview()}
         </Container>
     );
 };

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {fireEvent, render, screen, waitFor, act} from '@testing-library/react';
 import * as API from '../../api';
 import Teams from '../Teams';
