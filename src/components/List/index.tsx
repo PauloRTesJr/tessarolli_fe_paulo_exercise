@@ -1,32 +1,35 @@
-import * as React from 'react';
-import {ListItem} from 'types';
+import React from 'react';
+import {NavigateOptions} from 'react-router-dom';
+import {ListItem, Teams, UserData} from 'types';
 import Card from '../Card';
-import {Spinner} from '../Spinner';
 import {Container} from './styles';
 
 interface Props {
     items?: ListItem[];
     hasNavigation?: boolean;
-    isLoading: boolean;
+    onClick?: (url: string, navigationProps: NavigateOptions) => void;
 }
 
-const List = ({items, hasNavigation = true, isLoading}: Props) => {
+const List = ({items, hasNavigation = true, onClick}: Props) => {
+    const handleCardClick = (url: string, navigationProps: UserData | Teams) => {
+        if (hasNavigation && onClick) {
+            onClick(url, {state: navigationProps});
+        }
+    };
+
     return (
         <Container>
-            {isLoading && <Spinner />}
-            {!isLoading &&
-                items.map(({url, id, columns, navigationProps}, index) => {
-                    return (
-                        <Card
-                            key={`${id}-${index}`}
-                            id={id}
-                            columns={columns}
-                            navigationProps={navigationProps}
-                            hasNavigation={hasNavigation}
-                            url={url}
-                        />
-                    );
-                })}
+            {items.map(({url, id, columns, navigationProps}, index) => {
+                return (
+                    <Card
+                        key={`${id}-${index}`}
+                        id={id}
+                        columns={columns}
+                        onClick={() => handleCardClick(url, navigationProps)}
+                        hasNavigation
+                    />
+                );
+            })}
         </Container>
     );
 };

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled, {keyframes} from 'styled-components';
 
 const spinnerAnimation = keyframes`
@@ -17,6 +17,7 @@ const SpinnerBody = styled.div`
     border-top-color: #3b82f6;
     border-radius: 50%;
     animation: ${spinnerAnimation} 800ms linear infinite;
+    margin: 4rem 0;
 `;
 
 export const Spinner = () => {

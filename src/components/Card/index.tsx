@@ -1,45 +1,43 @@
-import * as React from 'react';
-import {useNavigate} from 'react-router-dom';
-import {Teams, UserData} from 'types';
-import {Container} from './styles';
+import React, {MouseEventHandler} from 'react';
+import {Circle, Column, ColumnKey, ColumnValue, Container} from './styles';
 
 interface Props {
     id?: string;
-    url?: string;
     columns: Array<{
         key: string;
         value: string;
     }>;
     hasNavigation?: boolean;
-    navigationProps?: UserData | Teams;
+    onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
-const Card = ({
-    id,
-    columns,
-    url,
-    hasNavigation = true,
-    navigationProps = null,
-}: Props): JSX.Element => {
-    const navigate = useNavigate();
+const Card = ({id, columns, hasNavigation = false, onClick}: Props): JSX.Element => {
+    const initials = columns[0]?.value
+        .split(' ')
+        .map(word => word.charAt(0))
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
+    const handleOnClick: MouseEventHandler<HTMLDivElement> = event => {
+        event.preventDefault();
+        if (hasNavigation && onClick) {
+            onClick(event);
+        }
+    };
 
     return (
         <Container
-            data-testid={`cardContainer-${id}`}
             hasNavigation={hasNavigation}
-            onClick={(e: Event) => {
-                if (hasNavigation) {
-                    navigate(url, {
-                        state: navigationProps,
-                    });
-                }
-                e.preventDefault();
-            }}
+            data-testid={`cardContainer-${id}`}
+            onClick={handleOnClick}
         >
-            {columns.map(({key: columnKey, value}) => (
-                <p key={columnKey}>
-                    <strong>{columnKey}</strong>&nbsp;{value}
-                </p>
+            <Circle>{initials}</Circle>
+            {columns?.map(({key: columnKey, value}) => (
+                <Column key={columnKey}>
+                    <ColumnKey>{columnKey}</ColumnKey>
+                    <ColumnValue>{value}</ColumnValue>
+                </Column>
             ))}
         </Container>
     );
