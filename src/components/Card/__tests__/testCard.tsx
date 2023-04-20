@@ -1,14 +1,6 @@
 import React from 'react';
 import {fireEvent, render, screen} from '@testing-library/react';
-import {Teams} from 'types';
 import Card from '..';
-
-const mockUseNavigate = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useNavigate: () => mockUseNavigate,
-}));
 
 describe('Card', () => {
     it('should render card with single column', () => {
@@ -37,29 +29,34 @@ describe('Card', () => {
         expect(screen.getByText('columnKey4')).toBeInTheDocument();
     });
 
-    it('should navigate when card is clicked and navigation is enabled', () => {
-        const navProps = {
-            id: '1',
-            name: 'Team 1',
-        } as Teams;
+    it('should emit click event when card is clicked and navigation is enabled', () => {
+        const mockOnClick = jest.fn();
+
         render(
             <Card
                 columns={[{key: 'columnKey', value: 'columnValue'}]}
-                url="path"
-                navigationProps={navProps}
+                hasNavigation
+                onClick={mockOnClick}
             />
         );
 
         fireEvent.click(screen.getByText('columnKey'));
 
-        expect(mockUseNavigate).toHaveBeenCalledWith('path', {state: navProps});
+        expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
-    it('should not navigate when card is clicked and navigation is disabled', () => {
-        render(<Card columns={[{key: 'columnKey', value: 'columnValue'}]} hasNavigation={false} />);
+    it('should not emit click event when card is clicked and navigation is disabled', () => {
+        const mockOnClick = jest.fn();
+        render(
+            <Card
+                columns={[{key: 'columnKey', value: 'columnValue'}]}
+                hasNavigation={false}
+                onClick={mockOnClick}
+            />
+        );
 
         fireEvent.click(screen.getByText('columnKey'));
 
-        expect(mockUseNavigate).not.toHaveBeenCalled();
+        expect(mockOnClick).not.toHaveBeenCalled();
     });
 });

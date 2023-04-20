@@ -33,9 +33,13 @@ const Teams = () => {
 
     useEffect(() => {
         const getTeams = async () => {
-            const response = await fetchTeams();
+            try {
+                const teamsResponse = await fetchTeams();
 
-            setTeams(response);
+                setTeams(teamsResponse);
+            } catch (error) {
+                setTeams([]);
+            }
             setIsLoading(false);
         };
         getTeams();
@@ -44,10 +48,12 @@ const Teams = () => {
     return (
         <Container>
             <Header title="Teams" showBackButton={false} />
-            <Filter label="Search Project" onChange={event => handleOnFilterChange(event)} />
             {isLoading && <Spinner />}
             {!isLoading && (
-                <List onClick={handleCardClick} hasNavigation items={mappedTeamsToList} />
+                <React.Fragment>
+                    <Filter label="Search Project" onChange={handleOnFilterChange} />
+                    <List onClick={handleCardClick} hasNavigation items={mappedTeamsToList} />
+                </React.Fragment>
             )}
         </Container>
     );

@@ -39,7 +39,7 @@ const TeamOverview = () => {
     const [filter, setFilter] = useState<string>('');
 
     const filteredTeamMembers = useMemo(
-        () => filterTeamMembers(pageData.teamMembers, filter),
+        () => filterTeamMembers(pageData?.teamMembers, filter),
         [pageData, filter]
     );
 
@@ -48,7 +48,7 @@ const TeamOverview = () => {
         [filteredTeamMembers]
     );
 
-    const mappedTeamLead = useMemo(() => mapUserToListItem(pageData.teamLead), [pageData]);
+    const mappedTeamLead = useMemo(() => mapUserToListItem(pageData?.teamLead), [pageData]);
 
     const handleOnFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
         setFilter(event.target.value);
@@ -58,6 +58,9 @@ const TeamOverview = () => {
     };
 
     const teamLeadCard = () => {
+        if (!mappedTeamLead) {
+            return null;
+        }
         return (
             <Card
                 onClick={() =>
@@ -70,12 +73,16 @@ const TeamOverview = () => {
     };
 
     const teamMembersList = () => {
+        if (!mappedTeamMembersToListItem) {
+            return null;
+        }
         return <List onClick={handleCardClick} hasNavigation items={mappedTeamMembersToListItem} />;
     };
 
     const renderTeamOverview = () => {
         return (
             <React.Fragment>
+                <Filter label="Search Team Member" onChange={handleOnFilterChange} />
                 {teamLeadCard()}
                 {teamMembersList()}
             </React.Fragment>
@@ -84,17 +91,21 @@ const TeamOverview = () => {
 
     useEffect(() => {
         const getTeamUsers = async () => {
-            const {teamLeadId, teamMemberIds = []} = await getTeamOverview(teamId);
-            const teamLead = await getUserData(teamLeadId);
+            try {
+                const {teamLeadId, teamMemberIds = []} = await getTeamOverview(teamId);
+                const teamLead = await getUserData(teamLeadId);
 
-            const teamMembers = await Promise.all(
-                teamMemberIds.map(teamMemberId => getUserData(teamMemberId))
-            );
+                const teamMembers = await Promise.all(
+                    teamMemberIds.map(teamMemberId => getUserData(teamMemberId))
+                );
 
-            setPageData({
-                teamLead,
-                teamMembers,
-            });
+                setPageData({
+                    teamLead,
+                    teamMembers,
+                });
+            } catch (error) {
+                setPageData(null);
+            }
             setIsLoading(false);
         };
         getTeamUsers();
@@ -103,7 +114,6 @@ const TeamOverview = () => {
     return (
         <Container>
             <Header title={`Team ${location.state.name}`} />
-            <Filter label="Search Team Member" onChange={handleOnFilterChange} />
             {isLoading && <Spinner />}
             {!isLoading && renderTeamOverview()}
         </Container>

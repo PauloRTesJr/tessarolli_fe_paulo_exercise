@@ -25,7 +25,7 @@ const Card = ({id, columns, hasNavigation = false, onClick}: Props): JSX.Element
             data-testid={`cardContainer-${id}`}
             onClick={handleOnClick}
         >
-            {columns.map(({key: columnKey, value}) => (
+            {columns?.map(({key: columnKey, value}) => (
                 <p key={columnKey}>
                     <strong>{columnKey}</strong>&nbsp;{value}
                 </p>

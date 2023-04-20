@@ -27,18 +27,20 @@ export const mapUserToListItem = (userData: UserData): ListItem => {
 };
 
 export const mapTeamsToListItem = (teams: TeamsList[]) => {
-    return teams.map(team => {
-        const columns = [
-            {
-                key: 'Name',
-                value: team.name,
-            },
-        ];
-        return {
-            id: team.id,
-            url: `/team/${team.id}`,
-            columns,
-            navigationProps: team,
-        } as ListItem;
-    });
+    return (
+        teams?.map(team => {
+            const columns = [
+                {
+                    key: 'Name',
+                    value: team.name,
+                },
+            ];
+            return {
+                id: team.id,
+                url: `/team/${team.id}`,
+                columns,
+                navigationProps: team,
+            } as ListItem;
+        }) ?? []
+    );
 };
