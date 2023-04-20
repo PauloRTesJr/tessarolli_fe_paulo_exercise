@@ -6,4 +6,10 @@
 
 body {
   font-family: 'Roboto', sans-serif;
+  background: #EEEEEE;
+}
+
+:root {
+  --primary-color: #00BEC8;
+  --secondary-color: #00325A;
 }

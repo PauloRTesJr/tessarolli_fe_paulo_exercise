@@ -1,5 +1,5 @@
 import React, {MouseEventHandler} from 'react';
-import {Container} from './styles';
+import {Circle, Column, ColumnKey, ColumnValue, Container} from './styles';
 
 interface Props {
     id?: string;
@@ -12,6 +12,13 @@ interface Props {
 }
 
 const Card = ({id, columns, hasNavigation = false, onClick}: Props): JSX.Element => {
+    const initials = columns[0]?.value
+        .split(' ')
+        .map(word => word.charAt(0))
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
     const handleOnClick: MouseEventHandler<HTMLDivElement> = event => {
         event.preventDefault();
         if (hasNavigation && onClick) {
@@ -25,10 +32,12 @@ const Card = ({id, columns, hasNavigation = false, onClick}: Props): JSX.Element
             data-testid={`cardContainer-${id}`}
             onClick={handleOnClick}
         >
+            <Circle>{initials}</Circle>
             {columns?.map(({key: columnKey, value}) => (
-                <p key={columnKey}>
-                    <strong>{columnKey}</strong>&nbsp;{value}
-                </p>
+                <Column key={columnKey}>
+                    <ColumnKey>{columnKey}</ColumnKey>
+                    <ColumnValue>{value}</ColumnValue>
+                </Column>
             ))}
         </Container>
     );

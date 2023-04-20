@@ -2,30 +2,29 @@ import styled from 'styled-components';
 
 export const HeaderContainer = styled.div`
     height: 100px;
-    margin: 10px;
     display: flex;
-    flex-direction: column;
+    width: 100%;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
+    background: var(--secondary-color);
+    color: white;
+    gap: 1rem;
 `;
 
 export const Title = styled.h1``;
-
-export const NavigationHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-`;
 
 export const BackButton = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 5px;
-    font-weight: bold;
-    font-size: 18px;
+    font-size: 1.2rem;
+    padding: 1rem;
+    background: var(--primary-color);
+    border-radius: 15px;
+    border: 0;
+    color: white;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
-    outline: 0;
+    &:hover {
+        transform: scale(1.1);
+    }
 `;
