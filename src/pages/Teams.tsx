@@ -1,28 +1,13 @@
 import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
-import {ListItem, Teams as TeamsList} from 'types';
-import {getTeams as fetchTeams} from '../api';
-import Header from '../components/Header';
-import List from '../components/List';
-import {Container} from '../components/GlobalComponents';
-import Filter from '../components/Filter';
-
-// TODO: Change every possible var to const
-var mapTeamsToList = (teams: TeamsList[]) => {
-    return teams.map(team => {
-        var columns = [
-            {
-                key: 'Name',
-                value: team.name,
-            },
-        ];
-        return {
-            id: team.id,
-            url: `/team/${team.id}`,
-            columns,
-            navigationProps: team,
-        } as ListItem;
-    });
-};
+import {Teams as TeamsList} from 'types';
+import {getTeams as fetchTeams} from 'api';
+import Header from 'components/Header';
+import List from 'components/List';
+import {Container} from 'components/GlobalComponents';
+import Filter from 'components/Filter';
+import {mapTeamsToListItem} from 'utils/mappers';
+import {Spinner} from 'components/Spinner';
+import {NavigateOptions, useNavigate} from 'react-router-dom';
 
 const filterTeams = (teams: TeamsList[], filter: string) => {
     const compareTeamNameWithFilter = (teamName: string) =>
@@ -31,13 +16,17 @@ const filterTeams = (teams: TeamsList[], filter: string) => {
 };
 
 const Teams = () => {
-    // TODO: Remove any from useState
-    const [teams, setTeams] = useState<any>([]);
-    const [isLoading, setIsLoading] = useState<any>(true);
-    const [filter, setFilter] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const [teams, setTeams] = useState<TeamsList[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [filter, setFilter] = useState<string>('');
 
     const filteredTeams = useMemo(() => filterTeams(teams, filter), [teams, filter]);
-    const mappedTeamsToList = useMemo(() => mapTeamsToList(filteredTeams), [filteredTeams]);
+    const mappedTeamsToList = useMemo(() => mapTeamsToListItem(filteredTeams), [filteredTeams]);
+
+    const handleCardClick = (url: string, navigationProps: NavigateOptions) => {
+        navigate(url, navigationProps);
+    };
 
     const handleOnFilterChange = (event: ChangeEvent<HTMLInputElement>) =>
         setFilter(event.target.value);
@@ -56,7 +45,10 @@ const Teams = () => {
         <Container>
             <Header title="Teams" showBackButton={false} />
             <Filter label="Search Project" onChange={event => handleOnFilterChange(event)} />
-            <List items={mappedTeamsToList} isLoading={isLoading} />
+            {isLoading && <Spinner />}
+            {!isLoading && (
+                <List onClick={handleCardClick} hasNavigation items={mappedTeamsToList} />
+            )}
         </Container>
     );
 };
